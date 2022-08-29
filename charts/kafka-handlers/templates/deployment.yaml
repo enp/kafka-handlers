@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-handlers
+  labels:
+    app: kafka-handlers
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-handlers
+  template:
+    metadata:
+      labels:
+        app: kafka-handlers
+        timestamp: "{{ now | unixEpoch }}"
+    spec:
+      containers:
+        - name: kafka-handlers
+          image: evnp/kafka-handlers:latest
+          imagePullPolicy: Always
+          env:
+            - name: SERVERS
+              value: "{{ .Values.connection.servers }}"
+            - name: TOPIC
+              value: "{{ .Values.connection.topic }}"
+            - name: GROUP
+              value: "{{ .Values.connection.group }}"
+            - name: USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-handlers
+                  key: username
+                  optional: true
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-handlers
+                  key: password
+                  optional: true

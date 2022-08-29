@@ -1,0 +1,6 @@
+connection:
+  servers: kafka-cluster:9092
+  topic: handlers
+  group: handlers
+  username: kuser
+  password: kpwd

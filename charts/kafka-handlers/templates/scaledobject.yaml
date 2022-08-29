@@ -1,0 +1,34 @@
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: kafka-handlers
+spec:
+  secretTargetRef:
+  - parameter: username
+    name: kafka-handlers
+    key: username
+  - parameter: password
+    name: kafka-handlers
+    key: password
+  - parameter: sasl
+    name: kafka-handlers
+    key: sasl
+  - parameter: tls
+    name: kafka-handlers
+    key: tls
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: kafka-handlers
+spec:
+  scaleTargetRef:
+    name: kafka-handlers
+  triggers:
+  - type: kafka
+    metadata:
+      bootstrapServers: "{{ .Values.connection.servers }}"
+      consumerGroup: "{{ .Values.connection.group }}"
+      topic: "{{ .Values.connection.topic }}"
+    authenticationRef:
+      name: kafka-handlers
